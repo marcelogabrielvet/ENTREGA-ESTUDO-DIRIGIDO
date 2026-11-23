@@ -27,7 +27,9 @@ function planilha_() {
   let id = props.getProperty('PLANILHA_ID');
   if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} }
   const ss = SpreadsheetApp.create(NOME_PLANILHA);
+  ss.setSpreadsheetLocale('en_US');
   const ent = ss.getSheets()[0].setName('Entregas');
+  ent.getRange('D:D').setNumberFormat('@');
   ent.getRange(1, 1, 1, CABECALHO.length).setValues([CABECALHO]).setFontWeight('bold').setBackground('#e7ecff');
   ent.setFrozenRows(1);
   ent.setColumnWidths(1, CABECALHO.length, 150);
@@ -42,6 +44,20 @@ function planilha_() {
   ]);
   props.setProperty('PLANILHA_ID', ss.getId());
   return ss;
+}
+
+/** Ajuste único: idioma das fórmulas, matrícula como texto e fórmulas de nota em todas as linhas. */
+function ajustar() {
+  const ss = planilha_();
+  ss.setSpreadsheetLocale('en_US');
+  const sh = ss.getSheetByName('Entregas');
+  sh.getRange('D:D').setNumberFormat('@');
+  for (let r = 2; r <= sh.getLastRow(); r++) formulaNota_(sh, r);
+}
+
+function formulaNota_(sh, r) {
+  sh.getRange(r, 10).setFormula(
+    '=IF(H' + r + '="","",IF(H' + r + '="A",\'Configuração\'!$B$1,IF(H' + r + '="B",\'Configuração\'!$B$1/2,0))*IF(I' + r + '="S",0.7,1))');
 }
 
 function pasta_() {
@@ -90,8 +106,7 @@ function doPost(e) {
       const sh = planilha_().getSheetByName('Entregas');
       sh.appendRow([carimbo, ESTUDOS[ed], nome, matricula, turma, fotos.length, sub.getUrl(), '', '', '', '']);
       const r = sh.getLastRow();
-      sh.getRange(r, 10).setFormula(
-        '=IF(H' + r + '="","",IF(H' + r + '="A",\'Configuração\'!$B$1,IF(H' + r + '="B",\'Configuração\'!$B$1/2,0))*IF(I' + r + '="S",0.7,1))');
+      formulaNota_(sh, r);
     } finally { lock.releaseLock(); }
 
     return resposta_({ ok: true, protocolo: carimbo, fotos: fotos.length });
