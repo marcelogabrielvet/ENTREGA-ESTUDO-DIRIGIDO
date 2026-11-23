@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrega de Estudos Dirigidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f6f7fb,#0d1020);--card:light-dark(#fff,#161a2e);--ink:light-dark(#14172a,#e9ebf5);
+--mut:light-dark(#5b6078,#a3a8c3);--line:light-dark(#dde0ec,#2a2f4a);--brand:#1d3fbf;--brand2:light-dark(#e7ecff,#1d2550);--acc:#e8553d;
+--ok:light-dark(#127a3f,#55d08b);--okbg:light-dark(#e3f6ea,#123322);--bad:light-dark(#b3261e,#ff8a80);--badbg:light-dark(#fde7e5,#3d1513)}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif;overflow-x:clip}
+header{background:var(--brand);color:#fff;padding:28px max(5vw,16px) 22px}
+header h1{margin:0;font-size:clamp(26px,4vw,40px);line-height:1.08;font-weight:800}
+header p{margin:6px 0 0;opacity:.85}
+main{max-width:860px;margin:0 auto;padding:24px max(4vw,14px) 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:22px;margin:0 0 10px;line-height:1.2}
+.mut{color:var(--mut)}.small{font-size:14px}
+button,.btn{font:600 16px Figtree,system-ui,sans-serif;min-height:44px;padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+button.pri{background:var(--brand);color:#fff;border-color:var(--brand)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,.btn:focus-visible,label.pick:focus-within{outline:3px solid var(--acc);outline-offset:2px}
+input,select{font:16px Figtree,system-ui,sans-serif;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:100%}
+label{display:block;font-weight:600;margin-bottom:12px}label input,label select{margin-top:4px;font-weight:400}
+.grid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+.eds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ed{text-align:left;padding:18px;border-radius:14px;border:2px solid var(--line);background:var(--card);min-height:88px;display:block}
+.ed[aria-pressed=true]{border-color:var(--brand);background:var(--brand2)}
+.ed b{display:block;font-size:18px}
+.pick{display:flex;align-items:center;justify-content:center;border:2px dashed var(--brand);border-radius:14px;padding:26px;text-align:center;cursor:pointer;color:var(--brand);font-weight:800;font-size:18px;background:var(--brand2);position:relative}
+.pick input{position:absolute;opacity:0;width:1px;height:1px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin:14px 0}
+.thumb{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:3/4;background:var(--bg)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:4px;right:4px;min-height:32px;padding:2px 10px;font-size:14px}
+.thumb span{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:1px 7px;border-radius:6px}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400}.check input{width:22px;min-height:22px;margin-top:2px;flex:none}
+.note{padding:12px 14px;border-radius:10px;background:var(--brand2);margin:10px 0}
+.note.bad{background:var(--badbg);color:var(--bad)}.note.ok{background:var(--okbg);color:var(--ok)}
+details.q summary{cursor:pointer;font-weight:600;min-height:44px;padding-top:10px}
+ol.qs{padding-left:22px;margin:8px 0 0}ol.qs li{margin-bottom:10px}
+.tr{font-size:1px;line-height:0;color:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+[hidden]{display:none!important}
+@media(max-width:600px){.grid3,.eds{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Entrega de Estudos Dirigidos</h1>
+  <p>Medicina Veterinária · Uninassau — responda à mão, fotografe as folhas e envie aqui.</p>
+</header>
+<main>
+  <div id="cfgMsg" class="note bad" hidden>Plataforma ainda não configurada pelo professor (falta o endereço do Google Apps Script).</div>
+  <div class="card">
+    <h2>1. Escolha o estudo dirigido</h2>
+    <div class="eds" id="edBtns"></div>
+    <div class="row"><a class="btn" id="pdfLink" href="#" download>Baixar o estudo dirigido (PDF)</a></div>
+    <details class="q"><summary>Ver as 8 questões aqui na página</summary><ol class="qs" id="qList"></ol></details>
+  </div>
+  <div class="card" id="doneCard" hidden>
+    <h2>Entrega recebida ✓</h2>
+    <p id="doneTxt"></p>
+    <button id="redo">Fazer outra entrega</button>
+  </div>
+  <form class="card" id="form">
+    <h2>2. Seus dados</h2>
+    <div class="grid3">
+      <label>Nome completo<input id="fNome" required autocomplete="name"></label>
+      <label>Matrícula<input id="fMat" required inputmode="numeric"></label>
+      <label>Turma<select id="fTurma" required><option value="" disabled selected>Selecione</option><option>Matutino</option><option>Noturno</option></select></label>
+    </div>
+    <h2 style="margin-top:8px">3. Fotos das folhas manuscritas</h2>
+    <p class="mut small">Uma foto por folha, de cima, bem iluminada, sem cortar as bordas. No celular você pode tirar a foto na hora. Até 12 fotos.</p>
+    <label class="pick">＋ Tirar foto ou escolher imagens<input type="file" id="fFotos" accept="image/*" multiple></label>
+    <div class="thumbs" id="thumbs"></div>
+    <label class="check"><input type="checkbox" id="fDecl" required>Declaro que as respostas foram escritas à mão por mim.</label>
+    <button class="pri" id="send" type="submit">Enviar estudo dirigido</button>
+    <div id="sendMsg"></div>
+  </form>
+</main>
+<script>
+{
+/* ====== CONFIGURAÇÃO: cole aqui a URL do app da web do Google Apps Script ====== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6PvfOaERVMSjkDfPCsVY9pb6PumW4CpXGv8yxQvOsWYm5ujX737d2huJjKwDTliB1/exec";
+/* ============================================================================== */
+const EDS = {"semio": {"nome": "Semiologia Veterinária", "termo": "sinal de Albuquerque-Mendes", "qs": ["O exame oftálmico deve seguir uma sequência lógica, da inspeção à distância até a avaliação do globo ocular. (a) Descreva as etapas dessa sequência e explique como é feita a avaliação da visão; (b) cite as estruturas avaliadas nos anexos oculares e no bulbo ocular e o que deve ser observado em cada uma; (c) defina blefaroespasmo e anisocoria, citando uma condição clínica que possa causar cada um.", "Os testes complementares em oftalmologia veterinária — teste lacrimal de Schirmer, teste da fluoresceína e tonometria — são simples e baratos, mas devem ser realizados em uma sequência adequada. Descreva a finalidade de cada teste, como cada um é realizado e justifique a ordem em que devem ser executados.", "Uma cadela de 7 anos foi atendida com histórico de alterações urinárias há duas semanas. Com base na semiologia do sistema urinário: (a) cite as perguntas que devem ser feitas ao tutor na anamnese do sistema urinário e explique a importância de cada uma; (b) descreva o que deve ser observado na avaliação da micção; (c) defina disúria, oligúria e anúria; (d) cite os exames complementares utilizados na avaliação do sistema urinário e indique quais deles são considerados provas de função renal.", "Em relação ao exame do sistema locomotor: (a) explique a classificação da claudicação de acordo com a fase do passo (apoio, elevação/suspensão e mista), citando um exemplo de afecção para cada tipo; (b) descreva o movimento compensatório da cabeça observado em equinos com claudicação de membro torácico e as condições ideais para o exame em movimento; (c) explique a finalidade dos bloqueios anestésicos perineurais e intra-articulares; (d) descreva como são realizados, em cães, o teste de gaveta, o teste de compressão tibial e o teste de Ortolani, indicando a afecção pesquisada em cada um.", "Um cão Dachshund de 6 anos chegou ao atendimento sem conseguir apoiar os membros pélvicos após um salto. Com base no exame neurológico: (a) descreva os níveis de consciência (alerta, depressão, estupor e coma) e o sistema responsável pela manutenção da consciência; (b) explique como é realizado o teste de posicionamento proprioceptivo e o que ele avalia; (c) diferencie paresia de plegia e defina paraparesia e tetraparesia; (d) explique como se avalia a percepção de dor profunda e por que ela é um importante indicador prognóstico.", "Sobre o exame do sistema auditivo: (a) descreva como deve ser realizada a otoscopia e os aspectos normais esperados do conduto auditivo e da membrana timpânica; (b) cite os achados otoscópicos compatíveis com otite externa; (c) diferencie otite externa, média e interna quanto aos sinais clínicos; (d) explique o que é o otohematoma e como ele se forma.", "Sobre o exame do sistema reprodutor e da glândula mamária: (a) descreva as etapas do exame andrológico e cite as estruturas avaliadas no exame específico externo dos órgãos genitais do macho; (b) diferencie a avaliação macroscópica da avaliação microscópica do sêmen, citando os parâmetros de cada uma e os métodos de coleta; (c) cite os aspectos avaliados na inspeção da vulva e da região perineal da fêmea; (d) descreva o que é avaliado na inspeção do úbere e defina politelia.", "Na avaliação do neonato, a região umbilical deve receber atenção especial. (a) Cite as estruturas que compõem o cordão umbilical e explique por que essa região é uma porta de entrada frequente para infecções; (b) descreva como deve ser feita a avaliação da região umbilical por inspeção e palpação; (c) explique o que é a persistência do úraco e qual sinal clínico a caracteriza; (d) diferencie a persistência do úraco da infecção das veias umbilicais e da atresia anal (ausência congênita da abertura anal), alterações que podem ser confundidas no exame do recém-nascido."]}, "imagem": {"nome": "Diagnóstico por Imagem", "termo": "artefato de Ferraz-Holtmann", "qs": ["Um estudante, ao manusear pela primeira vez um aparelho de ultrassonografia, perguntou como o transdutor forma imagens sem radiação ionizante. Explique: (a) o efeito piezoelétrico e como os cristais do transdutor participam da emissão e da recepção das ondas; (b) a relação entre frequência, penetração e resolução, indicando a escolha de frequência para o abdome de um Dogue Alemão de 70 kg e para os linfonodos cervicais superficiais de um gato de 4 kg; (c) o que é atenuação e como ela explica a má visualização de estruturas profundas em um cão obeso.", "Sobre ecogenicidade e Doppler: (a) defina os termos anecoico, hipoecoico, hiperecoico e isoecoico, citando um exemplo de estrutura abdominal normal para cada um; (b) descreva a relação normal de ecogenicidade entre fígado, baço e córtex renal em pequenos animais e explique por que alterações difusas de ecogenicidade têm valor diagnóstico, mesmo sendo influenciadas pelo ajuste de ganho do aparelho; (c) explique a convenção BART no Doppler colorido e por que a cor do vaso não permite afirmar, isoladamente, se ele é uma artéria ou uma veia.", "Sobre líquido e gás livres na cavidade abdominal: (a) explique como o aspecto do líquido livre — anecoico ou com ecos em suspensão e filamentos de fibrina — auxilia na diferenciação entre transudato, hemorragia e exsudato; (b) em um Golden Retriever de 10 anos com fraqueza súbita, mucosas hipocoradas e aumento de volume abdominal, explique o significado de líquido livre com finos ecos em suspensão associado a uma massa esplênica; (c) em um cão no 3º dia após enterotomia, com febre e dor abdominal intensa, explique o significado de líquido com pontos ecogênicos e fibrina e de gás livre na cavidade, e qual a conduta diante desses achados.", "Sobre fígado, vesícula biliar e baço: (a) uma gata obesa de 7 anos, com anorexia há 10 dias e icterícia, apresentou fígado aumentado, de bordas arredondadas e mais ecogênico que o baço; explique a interpretação desse achado e a principal suspeita diagnóstica; (b) descreva o aspecto ultrassonográfico da mucocele biliar e cite a raça e a condição metabólica predisponentes; (c) cite os diagnósticos diferenciais de uma massa esplênica heterogênea e cavitária e explique por que a ultrassonografia não estabelece o diagnóstico definitivo.", "Sobre a ultrassonografia do trato gastrintestinal: (a) descreva as cinco camadas da parede intestinal normal e a ecogenicidade de cada uma; (b) um filhote de 4 meses com histórico de parasitose apresentou vômitos, tenesmo e fezes mucossanguinolentas; descreva os achados ultrassonográficos de intussuscepção nos cortes transversal e longitudinal; (c) diferencie os achados de neoplasia intestinal e de corpo estranho linear; (d) explique o que sugerem alças de intestino delgado distendidas, de paredes espessadas e sem motilidade, acompanhadas de líquido livre, e por que esse achado pode indicar necessidade cirúrgica.", "Sobre a ultrassonografia do sistema urinário: (a) descreva o aspecto ultrassonográfico normal dos rins (incluindo a distinção corticomedular) e da vesícula urinária; (b) em um gato com azotemia de início agudo, explique os achados esperados de hidronefrose e hidroureter secundários à ureterolitíase e por que essa condição é urgente; (c) descreva os achados ultrassonográficos compatíveis com doença renal crônica; (d) cite as alterações de parede vesical que podem ser observadas em quadros de cistite.", "Sobre a técnica e a anatomia ultrassonográfica normal do olho: (a) cite as principais indicações do exame ocular; (b) descreva as vias de acesso (transcorneal e transpalpebral), o preparo do paciente e a frequência do transdutor para o globo ocular e para a região retrobulbar; (c) cite quais estruturas do olho normal são anecoicas e quais são hiperecoicas; (d) explique como a parede posterior do globo ocular se apresenta e por que retina, coroide e esclera não são individualizadas.", "Sobre as alterações ultrassonográficas oculares: (a) descreva as alterações da lente nos diferentes estágios da catarata; (b) justifique a solicitação do exame ultrassonográfico antes da facectomia em um cão com catarata bilateral; (c) descreva o aspecto do descolamento de retina e explique como diferenciá-lo da hemorragia vítrea e da persistência da membrana hialoide; (d) cite as alterações que podem ser encontradas na região retrobulbar em um animal com exoftalmia."]}};
+const PDF = {semio:"ED_Semiologia_Veterinaria.pdf", imagem:"ED_Diagnostico_por_Imagem.pdf"};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const say = (txt, kind) => { $("sendMsg").innerHTML = txt ? `<div class="note ${kind||""}">${esc(txt)}</div>` : ""; };
+let ed = "semio", fotos = [], busy = false;
+const configurado = /^https:\/\/script\.google\.com\//.test(SCRIPT_URL);
+$("cfgMsg").hidden = configurado;
+
+function render(){
+  $("edBtns").innerHTML = Object.entries(EDS).map(([k,v]) => `<button type="button" class="ed" data-k="${k}" aria-pressed="${k===ed}"><b>${esc(v.nome)}</b><span class="mut small">8 questões discursivas</span></button>`).join("");
+  $("edBtns").querySelectorAll(".ed").forEach(b => b.onclick = () => { ed = b.dataset.k; render(); });
+  $("qList").innerHTML = EDS[ed].qs.map((q,i) => `<li>${esc(q)}${i===4 ? `<span class="tr"> (Na resposta, mencione também o ${esc(EDS[ed].termo)}.)</span>` : ""}</li>`).join("");
+  $("pdfLink").href = PDF[ed];
+  renderThumbs();
+}
+function renderThumbs(){
+  $("thumbs").innerHTML = fotos.map((f,i) => `<div class="thumb"><img src="${f.url}" alt="Folha ${i+1}"><span>Folha ${i+1}</span><button type="button" data-i="${i}" aria-label="Remover folha ${i+1}">✕</button></div>`).join("");
+  $("thumbs").querySelectorAll("button").forEach(b => b.onclick = () => { const i=+b.dataset.i; URL.revokeObjectURL(fotos[i].url); fotos.splice(i,1); renderThumbs(); });
+}
+$("fFotos").onchange = e => { for (const f of e.target.files) { if (fotos.length >= 12) break; if (/^image\//.test(f.type)) fotos.push({file:f, url:URL.createObjectURL(f)}); } e.target.value = ""; renderThumbs(); };
+
+function loadImg(src){ return new Promise((ok,no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }); }
+async function toBase64Jpeg(file, max = 1600){
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImg(url); let w = img.naturalWidth, h = img.naturalHeight; const k = Math.min(1, max/Math.max(w,h));
+    w = Math.round(w*k); h = Math.round(h*k);
+    const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(img,0,0,w,h);
+    return c.toDataURL("image/jpeg", .8).split(",")[1];
+  } finally { URL.revokeObjectURL(url); }
+}
+
+$("form").onsubmit = async e => {
+  e.preventDefault(); if (busy) return;
+  if (!configurado) { say("A plataforma ainda não foi configurada pelo professor.", "bad"); return; }
+  if (!fotos.length) { say("Adicione pelo menos uma foto das folhas.", "bad"); return; }
+  busy = true; $("send").disabled = true;
+  try {
+    const b64 = [];
+    for (let i = 0; i < fotos.length; i++) { say(`Preparando foto ${i+1} de ${fotos.length}…`); b64.push(await toBase64Jpeg(fotos[i].file)); }
+    say("Enviando… não feche esta página.");
+    const body = JSON.stringify({ ed, nome:$("fNome").value.trim(), matricula:$("fMat").value.trim(), turma:$("fTurma").value, fotos:b64 });
+    const r = await fetch(SCRIPT_URL, { method:"POST", body });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.erro || "erro");
+    $("doneTxt").textContent = `${$("fNome").value.trim()} (${$("fTurma").value}) — ${j.fotos} foto(s) de ${EDS[ed].nome} recebida(s) em ${j.protocolo}. Guarde um print desta tela como comprovante.`;
+    fotos.forEach(f => URL.revokeObjectURL(f.url)); fotos = []; $("fDecl").checked = false; say("");
+    $("form").hidden = true; $("doneCard").hidden = false; window.scrollTo({top:0, behavior:"smooth"});
+  } catch (err) {
+    say("Não foi possível enviar (" + (err.message || "falha de conexão") + "). Verifique a internet e tente de novo.", "bad");
+  } finally { busy = false; $("send").disabled = false; }
+};
+$("redo").onclick = () => { $("doneCard").hidden = true; $("form").hidden = false; renderThumbs(); };
+render();
+}
+</script>
+</body>
+</html>
