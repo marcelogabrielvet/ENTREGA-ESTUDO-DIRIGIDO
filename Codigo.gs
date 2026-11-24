@@ -34,7 +34,7 @@ function planilha_() {
   ent.setFrozenRows(1);
   ent.setColumnWidths(1, CABECALHO.length, 150);
   const cfg = ss.insertSheet('Configuração');
-  cfg.getRange('A1:B1').setValues([['Nota máxima', 10]]).setFontWeight('bold');
+  cfg.getRange('A1:B2').setValues([['Nota máxima – Semiologia Veterinária', 1], ['Nota máxima – Diagnóstico por Imagem', 2]]).setFontWeight('bold');
   cfg.getRange('A3:A7').setValues([
     ['Categoria A = manuscrito e coerente → nota máxima'],
     ['Categoria B = manuscrito, mas aleatório → metade da nota'],
@@ -57,7 +57,9 @@ function ajustar() {
 
 function formulaNota_(sh, r) {
   sh.getRange(r, 10).setFormula(
-    '=IF(H' + r + '="","",IF(H' + r + '="A",\'Configuração\'!$B$1,IF(H' + r + '="B",\'Configuração\'!$B$1/2,0))*IF(I' + r + '="S",0.7,1))');
+    '=IF(H' + r + '="","",IF(H' + r + '="A",1,IF(H' + r + '="B",0.5,0))' +
+    '*IF(B' + r + '="Diagnóstico por Imagem",\'Configuração\'!$B$2,\'Configuração\'!$B$1)' +
+    '*IF(I' + r + '="S",0.7,1))');
 }
 
 function pasta_() {
@@ -106,6 +108,7 @@ function doPost(e) {
       const sh = planilha_().getSheetByName('Entregas');
       sh.appendRow([carimbo, ESTUDOS[ed], nome, matricula, turma, fotos.length, sub.getUrl(), '', '', '', '']);
       const r = sh.getLastRow();
+      sh.getRange(r, 4).setNumberFormat('@').setValue(matricula);
       formulaNota_(sh, r);
     } finally { lock.releaseLock(); }
 

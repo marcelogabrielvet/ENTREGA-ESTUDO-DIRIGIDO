@@ -28,7 +28,7 @@ Abra a página, faça uma entrega de teste com uma foto e confira se a linha apa
 Na planilha, aba **Entregas**:
 - **Coluna H – Categoria:** `A` (manuscrito e coerente), `B` (manuscrito, mas aleatório) ou `C` (não manuscrito / sem relação).
 - **Coluna I – Uso de IA:** `S` aplica desconto de 30%.
-- **Coluna J – Nota:** calculada automaticamente a partir da nota máxima da aba **Configuração**.
+- **Coluna J – Nota:** calculada automaticamente. Notas máximas (aba **Configuração**): Semiologia Veterinária = 1,0; Diagnóstico por Imagem = 2,0.
 
 As colunas H, I e K podem ser preenchidas pelo professor ou pelo Claude (com o Google Drive conectado).
 
