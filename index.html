@@ -92,11 +92,18 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const say = (txt, kind) => { $("sendMsg").innerHTML = txt ? `<div class="note ${kind||""}">${esc(txt)}</div>` : ""; };
 let ed = "semio", fotos = [], busy = false;
+const qp = new URLSearchParams(location.search);
+const pEd = (qp.get("ed")||"").toLowerCase(), pTurma = (qp.get("turma")||"").toLowerCase();
+if (pEd === "semio" || pEd === "semiologia") ed = "semio";
+if (pEd === "imagem") ed = "imagem";
+const TURMA_FIXA = pTurma === "matutino" ? "Matutino" : pTurma === "noturno" ? "Noturno" : "";
+const ED_FIXO = pEd === "semio" || pEd === "semiologia" || pEd === "imagem";
+if (TURMA_FIXA) { $("fTurma").value = TURMA_FIXA; $("fTurma").disabled = true; }
 const configurado = /^https:\/\/script\.google\.com\//.test(SCRIPT_URL);
 $("cfgMsg").hidden = configurado;
 
 function render(){
-  $("edBtns").innerHTML = Object.entries(EDS).map(([k,v]) => `<button type="button" class="ed" data-k="${k}" aria-pressed="${k===ed}"><b>${esc(v.nome)}</b><span class="mut small">Baixe o PDF, responda à mão e envie as fotos</span></button>`).join("");
+  $("edBtns").innerHTML = Object.entries(EDS).filter(([k]) => !ED_FIXO || k === ed).map(([k,v]) => `<button type="button" class="ed" data-k="${k}" aria-pressed="${k===ed}"><b>${esc(v.nome)}</b><span class="mut small">Baixe o PDF, responda à mão e envie as fotos</span></button>`).join("");
   $("edBtns").querySelectorAll(".ed").forEach(b => b.onclick = () => { ed = b.dataset.k; render(); });
   $("pdfLink").href = PDF[ed];
   renderThumbs();
